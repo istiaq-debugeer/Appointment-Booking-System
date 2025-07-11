@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Manage Schedule{% endblock %}
+{% block content %}
+    <h2>Manage Schedule</h2>
+    <form method="post" action="/doctor-schedule">
+        <div class="mb-3">
+            <label class="form-label">Available Timeslot</label>
+            <input type="text" name="timeslot" class="form-control" placeholder="e.g., 10:00-11:00" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Add Timeslot</button>
+    </form>
+    <h3>Current Timeslots</h3>
+    <ul class="list-group">
+        {% for timeslot in timeslots %}
+            <li class="list-group-item">{{ timeslot }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

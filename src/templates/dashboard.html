@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+    <h2>Welcome, {{ user.full_name }}!</h2>
+    {% if user.user_type == "Patient" %}
+        <a href="/book-appointment" class="btn btn-primary mb-2">Book Appointment</a>
+        <h3>Booking History</h3>
+        <ul class="list-group">
+            {% for booking in bookings %}
+                <li class="list-group-item">{{ booking.date }} - {{ booking.status }}</li>
+            {% endfor %}
+        </ul>
+    {% elif user.user_type == "Doctor" %}
+        <a href="/doctor-schedule" class="btn btn-primary mb-2">Manage Schedule</a>
+        <h3>Appointments</h3>
+        <ul class="list-group">
+            {% for appointment in appointments %}
+                <li class="list-group-item">{{ appointment.date }} - {{ appointment.status }}</li>
+            {% endfor %}
+        </ul>
+    {% elif user.user_type == "Admin" %}
+        <a href="/admin-dashboard" class="btn btn-primary mb-2">Admin Dashboard</a>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Monthly Report{% endblock %}
+{% block content %}
+    <h2>Monthly Report</h2>
+    <ul class="list-group">
+        <li class="list-group-item">Total Patient Visits: {{ report.total_visits }}</li>
+        <li class="list-group-item">Total Appointments: {{ report.total_appointments }}</li>
+        <li class="list-group-item">Total Earnings: {{ report.total_earnings }}</li>
+    </ul>
+{% endblock %}
