@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Admin Report{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Monthly Report</h2>
+
+    <ul class="list-group">
+        <li class="list-group-item"><strong>Total Patient Visits:</strong> {{ report.total_visits }}</li>
+        <li class="list-group-item"><strong>Total Appointments:</strong> {{ report.total_appointments }}</li>
+        <li class="list-group-item"><strong>Total Earnings:</strong> {{ report.total_earnings }} Tk</li>
+        <li class="list-group-item"><strong>Total Doctors:</strong> {{ report.total_doctors }}</li>
+        <li class="list-group-item"><strong>Most Visited Doctor:</strong> {{ report.top_doctor or 'N/A' }}</li>
+    </ul>
+</div>
+{% endblock %}

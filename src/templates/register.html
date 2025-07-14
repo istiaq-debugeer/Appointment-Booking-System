@@ -1,79 +1,85 @@
-    {% extends "base.html" %}
-    {% block title %}Register{% endblock %}
+{% extends "base.html" %}
+{% block title %}Register{% endblock %}
 
-    {% block content %}
-    <div class="container mt-5">
-        <h2 class="mb-4">Register</h2>
-        <form method="POST" action="/auth/register" enctype="multipart/form-data">
-            <div class="row">
-                
-                <div class="col-md-6 mb-3">
-                    <label for="full_name">Full Name</label>
-                    <input type="text" class="form-control" name="full_name" required>
-                </div>
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Register</h2>
 
-                <div class="col-md-6 mb-3">
-                    <label for="email">Email</label>
-                    <input type="email" class="form-control" name="email" required>
-                </div>
+    <!-- Error message display block -->
+    {% if error %}
+        <div class="alert alert-danger">
+            {{ error }}
+        </div>
+    {% endif %}
 
-                <div class="col-md-6 mb-3">
-                    <label for="mobile">Mobile (+88...)</label>
-                    <input type="text" class="form-control" name="mobile" required>
-                </div>
-
-                <div class="col-md-6 mb-3">
-                    <label for="password">Password</label>
-                    <input type="password" class="form-control" name="password" required>
-                </div>
-
-                <div class="col-md-6 mb-3">
-                    <label for="user_type">User Type</label>
-                    <select class="form-control" name="user_type" required>
-                        <option value="PATIENT">Patient</option>
-                        <option value="DOCTOR">Doctor</option>
-                        <option value="ADMIN">Admin</option>
-                    </select>
-                </div>
-
-                <div class="col-md-6 mb-3">
-                    <label for="division">Division</label>
-                    <input type="text" class="form-control" name="division">
-                </div>
-
-                <div class="col-md-6 mb-3">
-                    <label for="district">District</label>
-                    <input type="text" class="form-control" name="district">
-                </div>
-
-                <div class="col-md-6 mb-3">
-                    <label for="thana">Thana</label>
-                    <input type="text" class="form-control" name="thana">
-                </div>
-
-                <div class="col-md-6 mb-3">
-                    <label for="profile_image">Profile Image</label>
-                    <input type="file" class="form-control" name="profile_image">
-                </div>
-
-                <!-- Doctor-specific fields (optional) -->
-                <div class="col-md-6 mb-3">
-                    <label for="license_number">License Number</label>
-                    <input type="text" class="form-control" name="license_number">
-                </div>
-
-                <div class="col-md-6 mb-3">
-                    <label for="experience_years">Experience (Years)</label>
-                    <input type="number" class="form-control" name="experience_years" min="0">
-                </div>
-
-                <div class="col-md-6 mb-3">
-                    <label for="consultation_fee">Consultation Fee (Tk)</label>
-                    <input type="number" class="form-control" name="consultation_fee" step="0.01" min="0">
-                </div>
+    <form method="POST" action="/auth/register" enctype="multipart/form-data">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="full_name">Full Name</label>
+                <input type="text" class="form-control" name="full_name" required>
             </div>
 
-            <button type="submit" class="btn btn-primary">Register</button>
-        </form>
-    </div>
-    {% endblock %}
+            <div class="col-md-6 mb-3">
+                <label for="email">Email</label>
+                <input type="email" class="form-control" name="email" required>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="mobile">Mobile (+88...)</label>
+                <input type="text" class="form-control" name="mobile" required>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" name="password" required>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="user_type">User Type</label>
+                <select class="form-control" name="user_type" required>
+                    <option value="PATIENT">Patient</option>
+                    <option value="DOCTOR">Doctor</option>
+                    <option value="ADMIN">Admin</option>
+                </select>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="division">Division</label>
+                <input type="text" class="form-control" name="division">
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="district">District</label>
+                <input type="text" class="form-control" name="district">
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="thana">Thana</label>
+                <input type="text" class="form-control" name="thana">
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="profile_image">Profile Image</label>
+                <input type="file" class="form-control" name="profile_image">
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="license_number">License Number</label>
+                <input type="text" class="form-control" name="license_number">
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="experience_years">Experience (Years)</label>
+                <input type="number" class="form-control" name="experience_years" min="0">
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="consultation_fee">Consultation Fee (Tk)</label>
+                <input type="number" class="form-control" name="consultation_fee" step="0.01" min="0">
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Register</button>
+    </form>
+</div>
+{% endblock %}

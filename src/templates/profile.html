@@ -1,10 +1,22 @@
 {% extends "base.html" %}
-{% block title %}Monthly Report{% endblock %}
+{% block title %}Profile{% endblock %}
+
 {% block content %}
-    <h2>Monthly Report</h2>
+<div class="container mt-5">
+    <h2 class="mb-4">My Profile</h2>
     <ul class="list-group">
-        <li class="list-group-item">Total Patient Visits: {{ report.total_visits }}</li>
-        <li class="list-group-item">Total Appointments: {{ report.total_appointments }}</li>
-        <li class="list-group-item">Total Earnings: {{ report.total_earnings }}</li>
+        <li class="list-group-item"><strong>Full Name:</strong> {{ user.full_name }}</li>
+        <li class="list-group-item"><strong>Email:</strong> {{ user.email }}</li>
+        <li class="list-group-item"><strong>Mobile:</strong> {{ user.mobile }}</li>
+        <li class="list-group-item"><strong>User Type:</strong> {{ user.user_type }}</li>
+        <li class="list-group-item"><strong>Division:</strong> {{ user.division }}</li>
+        <li class="list-group-item"><strong>District:</strong> {{ user.district }}</li>
+        <li class="list-group-item"><strong>Thana:</strong> {{ user.thana }}</li>
+        {% if user.license_number %}
+        <li class="list-group-item"><strong>License Number:</strong> {{ user.license_number }}</li>
+        <li class="list-group-item"><strong>Experience (Years):</strong> {{ user.experience_years }}</li>
+        <li class="list-group-item"><strong>Consultation Fee:</strong> {{ user.consultation_fee }} Tk</li>
+        {% endif %}
     </ul>
+</div>
 {% endblock %}
