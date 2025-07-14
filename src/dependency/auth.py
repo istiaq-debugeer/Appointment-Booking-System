@@ -5,7 +5,8 @@ import os
 
 load_dotenv()
 
-SECRET_KEY = os.getenv("JWT_SECRET_KEY", "your-secret-key")
+# SECRET_KEY = os.getenv("JWT_SECRET_KEY")
+SECRET_KEY="a1b2c3d4e5f678901234567890abcdef1234567890abcdef1234567890abcdef"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 

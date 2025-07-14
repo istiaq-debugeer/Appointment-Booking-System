@@ -1,41 +1,45 @@
 from sqlalchemy.orm import Session
-from models.user import User
-from typing import Optional, List
+from models.appointments import Appointment, AppointmentStatus
+from typing import List, Optional
 
-
-class UserRepository:
+class AppointmentRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    def create_user(self, user: User) -> User:
-        self.db.add(user)
+    def create_appointment(self, appointment: Appointment) -> Appointment:
+        self.db.add(appointment)
         self.db.commit()
-        self.db.refresh(user)
-        return user
+        self.db.refresh(appointment)
+        return appointment
 
-    def get_user_by_id(self, user_id: int) -> Optional[User]:
-        return self.db.query(User).filter(User.id == user_id).first()
+    def get_appointment_by_id(self, appointment_id: int) -> Optional[Appointment]:
+        return self.db.query(Appointment).filter(Appointment.id == appointment_id).first()
 
-    def get_user_by_email(self, email: str) -> Optional[User]:
-        return self.db.query(User).filter(User.email == email).first()
+    def get_appointments_by_user(self, user_id: int) -> List[Appointment]:
+        return self.db.query(Appointment).filter(
+            (Appointment.patient_id == user_id) | (Appointment.doctor_id == user_id)
+        ).all()
+    
+    def get_appointments_by_doctor(self, doctor_id: int) -> List[Appointment]:
+        query = self.db.query(Appointment).filter(Appointment.doctor_id == doctor_id)
+        print(f"Query: {query}")
+        results = query.all()
+        print(f"Found {len(results)} appointments for doctor ID {doctor_id}")
+        return results
+    
+    def get_all_appointments(self) -> List[Appointment]:
+        return self.db.query(Appointment).all()
 
-    def get_all_users(self, skip: int = 0, limit: int = 10) -> List[User]:
-        return self.db.query(User).offset(skip).limit(limit).all()
-
-    def update_user(self, user_id: int, updates: dict) -> Optional[User]:
-        user = self.get_user_by_id(user_id)
-        if not user:
-            return None
-        for key, value in updates.items():
-            setattr(user, key, value)
-        self.db.commit()
-        self.db.refresh(user)
-        return user
-
-    def delete_user(self, user_id: int) -> bool:
-        user = self.get_user_by_id(user_id)
-        if user:
-            self.db.delete(user)
+    def update_appointment_status(self, appointment_id: int, status: AppointmentStatus) -> Optional[Appointment]:
+        appointment = self.get_appointment_by_id(appointment_id)
+        if appointment:
+            appointment.status = status
             self.db.commit()
-            return True
-        return False
+            self.db.refresh(appointment)
+        return appointment
+
+    def delete_appointment(self, appointment_id: int) -> None:
+        appointment = self.get_appointment_by_id(appointment_id)
+        if appointment:
+            self.db.delete(appointment)
+            self.db.commit()

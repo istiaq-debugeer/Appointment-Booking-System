@@ -32,9 +32,6 @@ class Appointment(AbstractModel):
     )
 
     # Relationships
-    patient = relationship(
-        "User", foreign_keys=[patient_id], back_populates="appointments_patient"
-    )
-    doctor = relationship(
-        "User", foreign_keys=[doctor_id], back_populates="appointments_doctor"
-    )
+    
+    patient = relationship("User", foreign_keys=[patient_id], back_populates="appointments_patient")
+    doctor = relationship("User", foreign_keys=[doctor_id], back_populates="appointments_doctor")

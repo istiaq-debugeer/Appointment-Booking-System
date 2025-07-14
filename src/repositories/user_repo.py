@@ -23,8 +23,8 @@ class UserRepository:
         self.db.refresh(user)
         return user
 
-    def get_all_users(self) -> List[User]:
-        return self.db.query(User).all()
+    def get_all_users(self, skip: int = 0, limit: int = 10) -> List[User]:
+        return self.db.query(User).offset(skip).limit(limit).all()
 
     def delete_user(self, user_id: int) -> None:
         user = self.get_user_by_id(user_id)

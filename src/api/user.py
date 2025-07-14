@@ -3,9 +3,12 @@ from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 from core.database import get_db
 from services.user_service import UserService
-from schemas.user_schema import UserCreate, UserUpdate, UserOut, UserType
+from schemas.user_schema import UserCreate, UserUpdate, UserOut, UserType, Userlogin
 from typing import List
 from core.config import templates
+from dependency.auth import create_access_token
+from models.user import User
+from services.appointemnt_service import AppointmentService
 
 router = APIRouter(prefix="/auth", tags=["Users"])
 user_route = router
@@ -57,24 +60,103 @@ async def handle_register(
             consultation_fee=consultation_fee,
         )
 
-        # Save image if provided
-        # image_path = None
-        # if profile_image:
-        #     image_path = f"static/uploads/{profile_image.filename}"
-        #     with open(image_path, "wb") as f:
-        #         f.write(await profile_image.read())
-        #     user_data.profile_image = image_path
-        print(user_data)
-        service.register_user(user_data)
-        print("Register success, redirecting...")
+        if profile_image and profile_image.filename:
+    
+            image_path = f"templates/static/uploads/{profile_image.filename}"
+            with open(image_path, "wb") as buffer:
+                await profile_image.seek(0)
+                buffer.write(await profile_image.read())
+
+            user_data.profile_image = image_path
+        created_user = service.register_user(user_data)
+       
+
+        # Redirect to login page on success
         return RedirectResponse(url="/auth/login", status_code=303)
 
     except Exception as e:
         return templates.TemplateResponse(
             "register.html", {"request": request, "error": str(e)}
         )
+    
+@router.get("/login")
+def login_response(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
 
 
+@router.post("/login")
+def login(
+    request: Request,
+    email: str = Form(...),
+    password: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    try:
+        auth_service = UserService(db)
+        user = auth_service.login_user(email, password)
+        
+        
+        access_token = create_access_token(data={"sub": user.email, "id": user.id})
+        
+        # response = RedirectResponse(url="/dashboard", status_code=303)
+        if user.user_type == UserType.ADMIN:
+            response = RedirectResponse(url="/admin/dashboard", status_code=303)
+        else:
+            response = RedirectResponse(url="/dashboard", status_code=303)
+
+        response.set_cookie(key="access_token", value=f"Bearer {access_token}", httponly=True)
+
+        return response
+
+    except HTTPException as e:
+        return templates.TemplateResponse("login.html", {"request": request, "message": e.detail})
+
+
+@router.get("/dashboard")
+def dashboard(request: Request, db: Session = Depends(get_db)):
+    user = request.state.user
+
+    # Ensure user_type is a string
+    user_data = {
+        "id": user.id,
+        "full_name": user.full_name,
+        "email": user.email,
+        "mobile": user.mobile,
+        "user_type": user.user_type.value  # Always use .value
+    }
+    service = AppointmentService(db)
+    if user.user_type == UserType.PATIENT:
+       
+        bookings = service.get_appointments_by_user(user.id)
+        return templates.TemplateResponse("dashboard.html", {"request": request, "user": user_data, "bookings": bookings})
+    
+    elif user.user_type == UserType.DOCTOR:
+        
+        appointments = service.get_appointments_by_doctor(user.id)
+        
+        return templates.TemplateResponse("dashboard.html", {"request": request, "user": user_data, "appointments": appointments})
+    
+    
+@router.get("/admin/dashboard")
+def admin_dashboard(request: Request, db: Session = Depends(get_db)):
+    user = request.state.user
+    if user.user_type != UserType.ADMIN:
+        raise HTTPException(status_code=403, detail="Access denied")
+
+    service = UserService(db)
+    appointment_service = AppointmentService(db)
+
+    users = service.get_all_users()
+    appointments = appointment_service.get_all_appointments()
+
+    return templates.TemplateResponse("admin_dashboard.html", {
+        "request": request,
+        "user": user,
+        "users": users,
+        "appointments": appointments
+    })
+
+    
 # @router.post("/register", response_model=UserCreate)
 # def register_user(user_data: UserCreate, db: Session = Depends(get_db)):
 #     service = UserService(db)
@@ -85,9 +167,7 @@ async def handle_register(
 #         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.get("/login")
-def login_page(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
+
 
 
 @router.get("/", response_model=List[UserOut])
@@ -101,11 +181,6 @@ def get_user(user_id: int, db: Session = Depends(get_db)):
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
-
-
-@router.post("/", response_model=UserOut)
-def create_user(user_data: UserCreate, db: Session = Depends(get_db)):
-    return UserService(db).create_user(user_data)
 
 
 @router.put("/{user_id}", response_model=UserOut)

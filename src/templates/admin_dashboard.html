@@ -1,12 +1,46 @@
 {% extends "base.html" %}
 {% block title %}Admin Dashboard{% endblock %}
+
 {% block content %}
+<div class="container mt-5">
     <h2>Admin Dashboard</h2>
-    <a href="/report" class="btn btn-primary mb-2">View Report</a>
-    <h3>Manage Appointments</h3>
+
+    <a href="/admin/doctors" class="btn btn-primary me-2">👥 Manage Doctors</a>
+    <a href="/admin/appointments" class="btn btn-info">📋 View All Appointments</a>
+    <a href="/admin/reports" class="btn btn-secondary">📊 Generate Reports</a>
+
+    <h4 class="mt-4">All Users</h4>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.full_name }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.user_type }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h4 class="mt-4">All Appointments</h4>
     <ul class="list-group">
         {% for appointment in appointments %}
-            <li class="list-group-item">{{ appointment.date }} - {{ appointment.status }}</li>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            {{ appointment.patient.full_name }} - {{ appointment.appointment_time.strftime('%Y-%m-%d %H:%M') }}
+            <span class="badge bg-{{ 'success' if appointment.status == 'CONFIRMED' else 'warning' if appointment.status == 'PENDING' else 'danger' }}">
+                {{ appointment.status }}
+            </span>
+        </li>
         {% endfor %}
     </ul>
+</div>
 {% endblock %}
