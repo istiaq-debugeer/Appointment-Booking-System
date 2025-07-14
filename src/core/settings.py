@@ -5,18 +5,18 @@ class Settings(BaseSettings):
     app_name: str = "Appointment Booking System"
     debug: bool = True
 
-    db_host: str
-    db_port: int
-    db_name: str
-    db_user: str
-    db_password: str
-    db_echo: bool = False
+    DB_HOST: str
+    DB_PORT: int
+    DB_NAME: str
+    DB_USER: str
+    DB_PASSWORD: str
+    # DB_ECHO: bool = False
 
     @property
-    def database_url(self) -> str:
+    def Database_url(self) -> str:
         return (
-            f"postgresql://{self.db_user}:{self.db_password}"
-            f"@{self.db_host}:{self.db_port}/{self.db_name}"
+            f"postgresql://{self.DB_USER}:{self.DB_PASSWORD}"
+            f"@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
         )
 
     class Config:

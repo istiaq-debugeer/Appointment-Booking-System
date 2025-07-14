@@ -10,6 +10,14 @@ class UserService:
         self.db = db
         self.repo = UserRepository(db)
 
+    def register_user(self, user_data: UserCreate) -> UserOut:
+        data = user_data.model_dump()
+        data["user_type"] = data["user_type"].value  # ✅ Convert Enum to string
+
+        user_model = User(**data)
+        created_user = self.repo.create_user(user_model)
+        print(created_user)
+
     def get_user_by_id(self, user_id: int) -> Optional[UserOut]:
         user = self.repo.get_user_by_id(user_id)
         return UserOut.from_orm(user) if user else None
@@ -18,12 +26,10 @@ class UserService:
         user = self.repo.get_user_by_email(email)
         return UserOut.from_orm(user) if user else None
 
-    def get_user_by_role(self,role:enum):
-        
-    def create_user(self, user_data: UserCreate) -> UserOut:
-        user_model = User(**user_data.model_dump())
-        created_user = self.repo.create_user(user_model)
-        return UserOut.from_orm(created_user)
+    # def create_user(self, user_data: UserCreate) -> UserOut:
+    #     user_model = User(**user_data.model_dump())
+    #     created_user = self.repo.create_user(user_model)
+    #     return UserOut.from_orm(created_user)
 
     def get_all_users(self, skip: int = 0, limit: int = 10) -> List[UserOut]:
         users = self.repo.get_all_users(skip, limit)

@@ -4,9 +4,9 @@ from enum import Enum
 
 
 class UserType(str, Enum):
-    PATIENT = "Patient"
-    DOCTOR = "Doctor"
-    ADMIN = "Admin"
+    PATIENT = "PATIENT"
+    DOCTOR = "DoDOCTORctor"
+    ADMIN = "ADMIN"
 
 
 class UserBase(BaseModel):
@@ -22,6 +22,9 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     password: str
+
+    class config:
+        from_orm = True
 
 
 class UserOut(UserBase):
