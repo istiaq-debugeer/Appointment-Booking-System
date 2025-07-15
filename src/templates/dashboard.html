@@ -33,7 +33,8 @@
         <!-- Doctor Section -->
     {% elif user.user_type == "DOCTOR" %}
         <h4 class="mt-4">Your Appointments</h4>
-        <p><strong>Raw Data:</strong> {{ appointments }}</p>
+       <a href="/auth/doctor/profile" class="btn btn-primary mb-3">📅 Schedule Appointment</a>
+        <p><strong>Total Appointments:</strong> {{ appointments|length }}</p>
 
         {% if appointments %}
             <ul class="list-group mb-4">

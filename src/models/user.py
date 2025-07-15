@@ -1,6 +1,6 @@
 from sqlalchemy import JSON, Column, String, Integer, Float
 from sqlalchemy.dialects.postgresql import JSONB
-
+from sqlalchemy.orm import relationship
 from core.base_models import AbstractModel
 from sqlalchemy import Enum
 import enum
@@ -32,6 +32,9 @@ class User(AbstractModel):
         JSON, nullable=True
     )  # e.g., [{"start": "10:00", "end": "11:00"}]
 
-
-    appointments_patient = relationship("Appointment", foreign_keys="[Appointment.patient_id]", back_populates="patient")
-    appointments_doctor = relationship("Appointment", foreign_keys="[Appointment.doctor_id]", back_populates="doctor")
+    appointments_patient = relationship(
+        "Appointment", foreign_keys="[Appointment.patient_id]", back_populates="patient"
+    )
+    appointments_doctor = relationship(
+        "Appointment", foreign_keys="[Appointment.doctor_id]", back_populates="doctor"
+    )

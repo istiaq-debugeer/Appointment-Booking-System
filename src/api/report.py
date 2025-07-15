@@ -11,7 +11,7 @@ router = APIRouter(prefix="/admin", tags=["Admin"])
 report_router = router
 
 
-@router.get("/report")
+@router.get("/reports")
 def generate_report(request: Request, db: Session = Depends(get_db)):
     # Total Appointments
     total_appointments = db.query(Appointment).count()
@@ -22,7 +22,7 @@ def generate_report(request: Request, db: Session = Depends(get_db)):
     )
 
     # Total Earnings
-    total_earnings = db.query(func.sum(Appointment.fee)).scalar() or 0
+    total_earnings = db.query(func.sum(User.consultation_fee)).scalar() or 0
 
     # Total Doctors
     total_doctors = db.query(User).filter(User.user_type == "DOCTOR").count()

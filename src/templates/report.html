@@ -3,14 +3,62 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h2 class="mb-4">Monthly Report</h2>
+    <h2 class="mb-4 text-primary">📊 Monthly Report Summary</h2>
 
-    <ul class="list-group">
-        <li class="list-group-item"><strong>Total Patient Visits:</strong> {{ report.total_visits }}</li>
-        <li class="list-group-item"><strong>Total Appointments:</strong> {{ report.total_appointments }}</li>
-        <li class="list-group-item"><strong>Total Earnings:</strong> {{ report.total_earnings }} Tk</li>
-        <li class="list-group-item"><strong>Total Doctors:</strong> {{ report.total_doctors }}</li>
-        <li class="list-group-item"><strong>Most Visited Doctor:</strong> {{ report.top_doctor or 'N/A' }}</li>
-    </ul>
+    <div class="row">
+        <!-- Total Appointments -->
+        <div class="col-md-4 mb-3">
+            <div class="card border-info shadow">
+                <div class="card-body text-center">
+                    <h5 class="card-title">🗓 Total Appointments</h5>
+                    <h2 class="text-info">{{ report.total_appointments }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Visits -->
+        <div class="col-md-4 mb-3">
+            <div class="card border-success shadow">
+                <div class="card-body text-center">
+                    <h5 class="card-title">👥 Total Visits</h5>
+                    <h2 class="text-success">{{ report.total_visits }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Earnings -->
+        <div class="col-md-4 mb-3">
+            <div class="card border-warning shadow">
+                <div class="card-body text-center">
+                    <h5 class="card-title">💰 Total Earnings</h5>
+                    <h2 class="text-warning">{{ report.total_earnings }} Tk</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Doctors -->
+        <div class="col-md-4 mb-3">
+            <div class="card border-primary shadow">
+                <div class="card-body text-center">
+                    <h5 class="card-title">🩺 Total Doctors</h5>
+                    <h2 class="text-primary">{{ report.total_doctors }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Doctor -->
+        <div class="col-md-8 mb-3">
+            <div class="card border-dark shadow">
+                <div class="card-body text-center">
+                    <h5 class="card-title">🏆 Most Visited Doctor</h5>
+                    <h2 class="text-dark">{{ report.top_doctor or 'N/A' }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-end mt-4">
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary">← Back to Dashboar
+    </div>
 </div>
 {% endblock %}
