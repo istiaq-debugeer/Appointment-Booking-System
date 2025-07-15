@@ -202,3 +202,12 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
 @router.get("/role/{role}", response_model=List[UserOut])
 def get_users_by_role(role: UserType, db: Session = Depends(get_db)):
     return UserService(db).get_user_by_role(role)
+
+
+@router.get("/logout")
+def logout(request: Request):
+    response = RedirectResponse(url="/auth/login", status_code=303)
+    response.delete_cookie("access_token")
+    request.session.clear()
+
+    return response
