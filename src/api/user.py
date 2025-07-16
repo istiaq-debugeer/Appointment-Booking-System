@@ -3,7 +3,7 @@ from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 from core.database import get_db
 from core.config import templates
-from schemas.user_schema import DoctorProfileUpdate, UserCreate, UserType
+from schemas.user_schema import DoctorProfileUpdate, UserCreate, UserType, UserUpdate
 from services.user_service import UserService
 
 
@@ -20,42 +20,10 @@ def show_register_form(request: Request):
 
 
 @router.post("/register")
-async def handle_register(
-    request: Request,
-    full_name: str = Form(...),
-    email: str = Form(...),
-    mobile: str = Form(...),
-    password: str = Form(...),
-    user_type: UserType = Form(...),
-    division: str = Form(None),
-    district: str = Form(None),
-    thana: str = Form(None),
-    license_number: str = Form(None),
-    experience_years: int = Form(None),
-    consultation_fee: float = Form(None),
-    available_start_time: list[str] = Form([]),
-    available_end_time: list[str] = Form([]),
-    profile_image: UploadFile = File(None),
-    db: Session = Depends(get_db),
-):
+async def handle_register(request: Request, db: Session = Depends(get_db)):
     service = UserService(db)
     try:
-        return await service.register_user_via_form(
-            full_name,
-            email,
-            mobile,
-            password,
-            user_type,
-            division,
-            district,
-            thana,
-            license_number,
-            experience_years,
-            consultation_fee,
-            available_start_time,
-            available_end_time,
-            profile_image,
-        )
+        return await service.register_user_via_form(request)
     except Exception as e:
         return templates.TemplateResponse(
             "register.html", {"request": request, "error": str(e)}
@@ -117,7 +85,6 @@ def update_doctor_profile_route(
 def doctor_profile_update_template(request: Request):
     user = request.state.user  # Assuming middleware sets this
 
-    # Assuming available_timeslots is stored on the user as a list of dicts with 'start' and 'end'
     timeslots = getattr(user, "available_timeslots", [])
 
     return templates.TemplateResponse(
@@ -131,3 +98,14 @@ def doctor_profile_update_template(request: Request):
             "consultation_fee": user.consultation_fee,
         },
     )
+
+
+@router.post("/user/{user_id}")
+def update_user_route(
+    user_id: int, user_update: UserUpdate, db: Session = Depends(get_db)
+):
+    service = UserService(db)
+    updated_user = service.update_user(user_id, user_update.dict(exclude_unset=True))
+    if not updated_user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return updated_user

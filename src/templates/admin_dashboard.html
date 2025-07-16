@@ -17,6 +17,7 @@
                 <th>Name</th>
                 <th>Email</th>
                 <th>Role</th>
+                <th>Actions</th> <!-- New column -->
             </tr>
         </thead>
         <tbody>
@@ -26,6 +27,12 @@
                 <td>{{ user.full_name }}</td>
                 <td>{{ user.email }}</td>
                 <td>{{ user.user_type }}</td>
+                <td>
+                    <a href="/auth/users/{{ user.id }}/edit" class="btn btn-sm btn-warning">Edit</a>
+                    <form method="post" action="/admin/users/{{ user.id }}/delete" style="display:inline;">
+                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this user?');">Delete</button>
+                    </form>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
@@ -35,10 +42,18 @@
     <ul class="list-group">
         {% for appointment in appointments %}
         <li class="list-group-item d-flex justify-content-between align-items-center">
-            {{ appointment.patient.full_name }} - {{ appointment.appointment_time.strftime('%Y-%m-%d %H:%M') }}
-            <span class="badge bg-{{ 'success' if appointment.status == 'CONFIRMED' else 'warning' if appointment.status == 'PENDING' else 'danger' }}">
-                {{ appointment.status }}
-            </span>
+            <div>
+                {{ appointment.patient.full_name }} - {{ appointment.appointment_time.strftime('%Y-%m-%d %H:%M') }}
+                <span class="badge bg-{{ 'success' if appointment.status == 'CONFIRMED' else 'warning' if appointment.status == 'PENDING' else 'danger' }}">
+                    {{ appointment.status }}
+                </span>
+            </div>
+            <div>
+                <a href="/appointments/{{ appointment.id }}/edit" class="btn btn-sm btn-warning me-1">Edit</a>
+                <form method="post" action="/appointments/{{appointment.id}}/delete" style="display:inline;">
+                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this appointment?');">Delete</button>
+                </form>
+            </div>
         </li>
         {% endfor %}
     </ul>

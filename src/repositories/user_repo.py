@@ -31,3 +31,14 @@ class UserRepository:
         if user:
             self.db.delete(user)
             self.db.commit()
+
+    def update_user(self, user_id: int, user_update_data: dict) -> Optional[User]:
+        user = self.get_user_by_id(user_id)
+        if not user:
+            return None
+        for key, value in user_update_data.items():
+            if hasattr(user, key) and value is not None:
+                setattr(user, key, value)
+        self.db.commit()
+        self.db.refresh(user)
+        return user

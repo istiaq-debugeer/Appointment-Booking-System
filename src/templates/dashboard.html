@@ -15,7 +15,8 @@
         {% if bookings %}
             <ul class="list-group mb-4">
                 {% for booking in bookings %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                
+                    <a href="/appointments/{{ booking.id }}/edit" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                         <div>
                             <strong>{{ booking.appointment_time.strftime('%Y-%m-%d %H:%M') }}</strong><br>
                             With Dr. {{ booking.doctor.full_name }}
@@ -23,7 +24,7 @@
                         <span class="badge bg-{{ 'success' if booking.status == 'CONFIRMED' else 'warning' if booking.status == 'PENDING' else 'danger' }}">
                             {{ booking.status | title }}
                         </span>
-                    </li>
+                    </a>
                 {% endfor %}
             </ul>
         {% else %}

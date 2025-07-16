@@ -13,21 +13,15 @@ report_router = router
 
 @router.get("/reports")
 def generate_report(request: Request, db: Session = Depends(get_db)):
-    # Total Appointments
     total_appointments = db.query(Appointment).count()
 
-    # Total Visits (assume visits = completed appointments)
     total_visits = (
         db.query(Appointment).filter(Appointment.status == "COMPLETED").count()
     )
-
-    # Total Earnings
     total_earnings = db.query(func.sum(User.consultation_fee)).scalar() or 0
 
-    # Total Doctors
     total_doctors = db.query(User).filter(User.user_type == "DOCTOR").count()
 
-    # Most visited doctor
     top_doctor = (
         db.query(Appointment.doctor_id, func.count(Appointment.id).label("visit_count"))
         .group_by(Appointment.doctor_id)

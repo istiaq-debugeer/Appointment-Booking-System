@@ -28,9 +28,7 @@ class User(AbstractModel):
     license_number = Column(String(50), nullable=True)
     experience_years = Column(Integer, nullable=True)
     consultation_fee = Column(Float, nullable=True)
-    available_timeslots = Column(
-        JSON, nullable=True
-    )  # e.g., [{"start": "10:00", "end": "11:00"}]
+    available_timeslots = Column(JSON, nullable=True)
 
     appointments_patient = relationship(
         "Appointment", foreign_keys="[Appointment.patient_id]", back_populates="patient"

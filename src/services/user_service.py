@@ -1,4 +1,5 @@
 import os
+from typing import Optional
 from fastapi import UploadFile, Request
 from fastapi.responses import RedirectResponse
 from fastapi import HTTPException
@@ -15,31 +16,42 @@ class UserService:
         self.db = db
         self.repo = UserRepository(db) if db else None
 
-    async def register_user_via_form(
-        self,
-        full_name: str,
-        email: str,
-        mobile: str,
-        password: str,
-        user_type: UserType,
-        division: str,
-        district: str,
-        thana: str,
-        license_number: str,
-        experience_years: int,
-        consultation_fee: float,
-        available_start_time: list[str],
-        available_end_time: list[str],
-        profile_image: UploadFile,
-    ):
-        if len(available_start_time) != len(available_end_time):
-            raise ValueError("Mismatch between start and end times.")
+    async def register_user_via_form(self, request: Request):
+        form = await request.form()
 
-        available_timeslots = [
-            {"start": s, "end": e}
-            for s, e in zip(available_start_time, available_end_time)
-        ]
+        user_type = UserType(form.get("user_type"))
+        full_name = form.get("full_name")
+        email = form.get("email")
+        mobile = form.get("mobile")
+        password = form.get("password")
+        division = form.get("division")
+        district = form.get("district")
+        thana = form.get("thana")
+        license_number = form.get("license_number")
+        experience_years = form.get("experience_years")
+        consultation_fee = form.get("consultation_fee")
+        available_start_time = form.getlist("available_start_time")
+        available_end_time = form.getlist("available_end_time")
+        profile_image: UploadFile = form.get("profile_image")
 
+        print(available_end_time, available_start_time)
+        # Type conversions
+        experience_years = int(experience_years) if experience_years else None
+        consultation_fee = float(consultation_fee) if consultation_fee else None
+
+        # Validate timeslots for doctor
+        available_timeslots = []
+        if user_type == UserType.DOCTOR:
+            if not all([license_number, experience_years, consultation_fee]):
+                raise ValueError("Doctor-specific fields are required.")
+            if len(available_start_time) != len(available_end_time):
+                raise ValueError("Time slot mismatch")
+            available_timeslots = [
+                {"start": s, "end": e}
+                for s, e in zip(available_start_time, available_end_time)
+            ]
+        print(available_timeslots)
+        # Prepare schema
         user_data = UserCreate(
             full_name=full_name,
             email=email,
@@ -49,13 +61,13 @@ class UserService:
             division=division,
             district=district,
             thana=thana,
-            license_number=license_number,
-            experience_years=experience_years,
-            consultation_fee=consultation_fee,
+            license_number=license_number if user_type == UserType.DOCTOR else None,
+            experience_years=experience_years if user_type == UserType.DOCTOR else None,
+            consultation_fee=consultation_fee if user_type == UserType.DOCTOR else None,
             available_timeslots=available_timeslots,
         )
 
-        # Handle file save
+        # Save image
         if profile_image and profile_image.filename:
             image_path = f"templates/static/uploads/{profile_image.filename}"
             with open(image_path, "wb") as buffer:
@@ -70,8 +82,8 @@ class UserService:
 
     def login_user_and_generate_response(self, email: str, password: str):
         user = self.repo.get_user_by_email(email)
-        # if not user or not user.verify_password(password):
-        #     raise HTTPException(status_code=401, detail="Invalid email or password")
+        if not user or not user.password == password:
+            raise HTTPException(status_code=401, detail="Invalid email or password")
 
         access_token = create_access_token(data={"sub": user.email, "id": user.id})
         redirect_url = (
@@ -82,7 +94,11 @@ class UserService:
 
         response = RedirectResponse(url=redirect_url, status_code=303)
         response.set_cookie(
-            key="access_token", value=f"Bearer {access_token}", httponly=True
+            key="access_token",
+            value=access_token,
+            httponly=True,
+            secure=False,  # set to True if using HTTPS
+            samesite="lax",
         )
         return response
 
@@ -219,3 +235,14 @@ class UserService:
         self.db.commit()
         self.db.refresh(user)
         return RedirectResponse(url="/auth/dashboard", status_code=303)
+
+    def update_user(self, user_id: int, user_update_data: dict) -> Optional[User]:
+        user = self.get_user_by_id(user_id)
+        if not user:
+            return None
+        for key, value in user_update_data.items():
+            if hasattr(user, key) and value is not None:
+                setattr(user, key, value)
+        self.db.commit()
+        self.db.refresh(user)
+        return user

@@ -1,18 +1,18 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import List, Dict
 
-def is_time_in_slots(appointment_time: datetime, slots: List[Dict[str, str]]) -> bool:
-    """
-    Checks if the given appointment time falls into any of the doctor's available time slots.
-    Assumes time format is HH:MM and same day.
-    """
-    appointment_str = appointment_time.strftime("%H:%M")
-    
-    for slot in slots:
-        start = slot["start"]
-        end = slot["end"]
 
-        if start <= appointment_str <= end:
+def is_time_in_slots(requested_time: datetime, slots: List[Dict[str, str]]) -> bool:
+    for slot in slots:
+        start = datetime.strptime(slot["start"], "%H:%M").time()
+        end = datetime.strptime(slot["end"], "%H:%M").time()
+
+        start_time = datetime.combine(requested_time.date(), start)
+        end_time = datetime.combine(requested_time.date(), end)
+
+        if end_time <= start_time:
+            end_time += timedelta(days=1)
+
+        if start_time <= requested_time <= end_time:
             return True
-    
     return False
