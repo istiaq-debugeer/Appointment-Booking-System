@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Depends, Form, UploadFile, File, Request, HTTPException
-from fastapi.responses import RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy.orm import Session
 from core.database import get_db
 from core.config import templates
 from schemas.user_schema import DoctorProfileUpdate, UserCreate, UserType, UserUpdate
 from services.user_service import UserService
-
+from sqlalchemy.exc import IntegrityError
 
 router = APIRouter(prefix="/auth", tags=["Users"])
 
@@ -19,14 +19,23 @@ def show_register_form(request: Request):
     )
 
 
-@router.post("/register")
+@router.post("/register", response_class=HTMLResponse)
 async def handle_register(request: Request, db: Session = Depends(get_db)):
     service = UserService(db)
     try:
         return await service.register_user_via_form(request)
+    except IntegrityError as e:
+        error_message = (
+            "Email already registered"
+            if "users_email_key" in str(e.orig)
+            else "Database error"
+        )
+        return templates.TemplateResponse(
+            "register.html", {"request": request, "error": error_message}
+        )
     except Exception as e:
         return templates.TemplateResponse(
-            "register.html", {"request": request, "error": str(e)}
+            "register.html", {"request": request, "error": "Something went wrong"}
         )
 
 

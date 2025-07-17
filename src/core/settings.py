@@ -1,4 +1,5 @@
-from pydantic_settings import BaseSettings
+from pydantic import Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -10,6 +11,12 @@ class Settings(BaseSettings):
     DB_NAME: str
     DB_USER: str
     DB_PASSWORD: str
+
+    SMTP_SERVER: str
+    SMTP_PORT: int
+    SMTP_USER: str
+    SMTP_PASSWORD: str
+    FROM_EMAIL: str
     # DB_ECHO: bool = False
 
     @property
@@ -21,6 +28,19 @@ class Settings(BaseSettings):
 
     class Config:
         env_file = ".env"
+
+
+# class EmailSettings(BaseSettings):
+#     # Existing settings like DATABASE_URL, etc.
+
+#     SMTP_SERVER: str
+#     SMTP_PORT: int
+#     SMTP_USER: str
+#     SMTP_PASSWORD: str
+#     FROM_EMAIL: str
+
+#     class Config:
+#         env_file = ".env"
 
 
 settings = Settings()

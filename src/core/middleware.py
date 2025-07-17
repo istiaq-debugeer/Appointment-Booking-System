@@ -17,18 +17,16 @@ async def auth_middleware(request: Request, call_next):
             return RedirectResponse(url="/auth/login")
 
     else:
-        # Remove Bearer prefix if present
         if token.startswith("Bearer "):
             token = token[len("Bearer ") :]
 
-        # Verify token
         payload = verify_token(token)
         if payload:
             db: Session = next(get_db())
             email = payload.get("sub")
             user = UserRepository(db).get_user_by_email(email)
             if user:
-                request.state.user = user  # ✅ Set user in request.state
+                request.state.user = user
 
     response = await call_next(request)
     return response

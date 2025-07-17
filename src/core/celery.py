@@ -1,6 +1,6 @@
 from celery import Celery
 
-from core.app_vars import RABBIT_URL
+from  import RABBIT_URL
 
 celery_app = Celery(
     "report-task", broker=RABBIT_URL, backend="rpc://", include=["core.tasks"]
