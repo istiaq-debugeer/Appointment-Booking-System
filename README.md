@@ -61,5 +61,3 @@ src/
 - Book and manage appointments
 - Admins can access the dashboard for reports and user management
 
-## License
-MIT License
