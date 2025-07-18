@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Request
+from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from core.settings import settings
@@ -14,6 +15,9 @@ app = FastAPI(title=settings.app_name, debug=settings.debug)
 
 app.mount("/static", StaticFiles(directory="templates/static"), name="static")
 
+@app.get("/")
+async def root():
+    return RedirectResponse(url="/auth/login")
 app.include_router(user_route)
 app.include_router(appointment_route)
 app.include_router(report_router)

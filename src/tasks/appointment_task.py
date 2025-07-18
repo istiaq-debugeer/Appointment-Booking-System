@@ -7,7 +7,7 @@ from core.celery import celery_app
 from core.database import get_db
 from models.appointments import Appointment
 from models.user import User
-from app.utils.email_notification import send_email
+from utils.email_notifications import send_email
 import asyncio
 
 
@@ -31,7 +31,7 @@ def send_appointment_reminders():
         doctor = db.query(User).filter(User.id == appt.doctor_id).first()
 
         if patient and doctor:
-            subject = "🩺 Appointment Reminder"
+            subject = "Appointment Reminder"
             body = (
                 f"Hello {patient.full_name},\n\n"
                 f"This is a reminder for your appointment with Dr. {doctor.full_name} on "

@@ -37,7 +37,15 @@ async def handle_register(request: Request, db: Session = Depends(get_db)):
         return templates.TemplateResponse(
             "register.html", {"request": request, "error": "Something went wrong"}
         )
-
+    
+    except ValueError as e:
+        error_message = (
+            str(e) if str(e) else "Invalid input"
+        )
+        return templates.TemplateResponse(
+            "register.html", {"request": request, "error": error_message}
+        )
+    
 
 @router.get("/login")
 def show_login_form(request: Request):

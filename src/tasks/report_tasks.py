@@ -5,7 +5,7 @@ from core.database import get_db
 from models.appointments import Appointment
 from models.user import User
 from sqlalchemy import func
-from app.core.celery import celery_app
+from core.celery import celery_app
 
 
 @celery_app.task

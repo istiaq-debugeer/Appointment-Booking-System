@@ -51,7 +51,8 @@ class UserService:
                 for s, e in zip(available_start_time, available_end_time)
             ]
         print(available_timeslots)
-        # Prepare schema
+        if not mobile.startswith("+880"):
+            raise ValueError("Mobile number must start with +880")
         user_data = UserCreate(
             full_name=full_name,
             email=email,
@@ -67,7 +68,6 @@ class UserService:
             available_timeslots=available_timeslots,
         )
 
-        # Save image
         if profile_image and profile_image.filename:
             image_path = f"templates/static/uploads/{profile_image.filename}"
             with open(image_path, "wb") as buffer:
