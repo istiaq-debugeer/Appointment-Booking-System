@@ -1,51 +1,163 @@
 {% extends "base.html" %}
 {% block title %}Register{% endblock %}
+
 {% block content %}
-    <h2>Register</h2>
-    {% if message %}
-        <div class="alert alert-success">{{ message }}</div>
+<div class="container mt-5">
+    <h2 class="mb-4">Register</h2>
+
+    <!-- Error message display block -->
+    {% if error %}
+        <div class="alert alert-danger">
+            {{ error }}
+        </div>
     {% endif %}
-    <form method="post" action="/register" enctype="multipart/form-data">
-        <div class="mb-3">
-            <label class="form-label">Full Name</label>
-            <input type="text" name="full_name" class="form-control" required>
+
+    <form method="POST" action="/auth/register" enctype="multipart/form-data">
+        <div class="row">
+            <!-- Full Name, Email, Mobile, Password, User Type -->
+            <div class="col-md-6 mb-3">
+                <label for="full_name">Full Name</label>
+                <input type="text" class="form-control" name="full_name" required>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="email">Email</label>
+                <input type="email" class="form-control" name="email" required>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="mobile">Mobile (+88...)</label>
+                <input type="text" class="form-control" name="mobile" required>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" name="password" required>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="user_type">User Type</label>
+                <select class="form-control" name="user_type" id="user_type" required>
+                    <option value="PATIENT">Patient</option>
+                    <option value="DOCTOR">Doctor</option>
+                    <option value="ADMIN">Admin</option>
+                </select>
+            </div>
+
+            <!-- Address Fields -->
+            <div class="col-md-6 mb-3">
+                <label for="division">Division</label>
+                <input type="text" class="form-control" name="division">
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="district">District</label>
+                <input type="text" class="form-control" name="district">
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="thana">Thana</label>
+                <input type="text" class="form-control" name="thana">
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="profile_image">Profile Image</label>
+                <input type="file" class="form-control" name="profile_image">
+            </div>
+
+            <!-- Doctor-specific fields (conditionally shown) -->
+            <div class="doctor-fields" style="display: none;">
+                <div class="col-md-6 mb-3">
+                    <label for="license_number">License Number</label>
+                    <input type="text" class="form-control" name="license_number">
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="experience_years">Experience (Years)</label>
+                    <input type="number" class="form-control" name="experience_years" min="0">
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="consultation_fee">Consultation Fee (Tk)</label>
+                    <input type="number" class="form-control" name="consultation_fee" step="0.01" min="0">
+                </div>
+
+                <div class="col-md-12 mb-3">
+                    <label>Available Time Slots</label>
+                    <div id="timeslot-container">
+                        <div class="row timeslot-row">
+                            <div class="col-md-5">
+                                <input type="time" class="form-control" name="available_start_time" required>
+                            </div>
+                            <div class="col-md-5">
+                                <input type="time" class="form-control" name="available_end_time" required>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-success btn-sm add-timeslot">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Register</button>
         </div>
-        <div class="mb-3">
-            <label class="form-label">Email</label>
-            <input type="email" name="email" class="form-control" required>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Mobile (+88)</label>
-            <input type="text" name="mobile" class="form-control" pattern="\+88[0-9]{11}" required>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Password</label>
-            <input type="password" name="password" class="form-control" required>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">User Type</label>
-            <select name="user_type" class="form-select">
-                <option value="Patient">Patient</option>
-                <option value="Doctor">Doctor</option>
-                <option value="Admin">Admin</option>
-            </select>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Address (Division)</label>
-            <input type="text" name="division" class="form-control" required>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">District</label>
-            <input type="text" name="district" class="form-control" required>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Thana</label>
-            <input type="text" name="thana" class="form-control" required>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Profile Image (JPEG/PNG, max 5MB)</label>
-            <input type="file" name="profile_image" class="form-control" accept="image/jpeg,image/png">
-        </div>
-        <button type="submit" class="btn btn-primary">Register</button>
     </form>
+</div>
+
+<!-- JavaScript to toggle doctor fields -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const userTypeSelect = document.getElementById("user_type");
+        const doctorFields = document.querySelector(".doctor-fields");
+
+        // Toggle fields when user type changes
+        userTypeSelect.addEventListener("change", function () {
+            if (userTypeSelect.value === "DOCTOR") {
+                doctorFields.style.display = "block";
+                // Set required attributes
+                doctorFields.querySelectorAll("input").forEach(input => {
+                    input.setAttribute("required", true);
+                });
+            } else {
+                doctorFields.style.display = "none";
+                // Remove required attributes
+                doctorFields.querySelectorAll("input").forEach(input => {
+                    input.removeAttribute("required");
+                });
+            }
+        });
+
+        // Trigger on page load
+        userTypeSelect.dispatchEvent(new Event("change"));
+
+        // Dynamic time slots logic
+        const container = document.getElementById('timeslot-container');
+        const addButton = document.querySelector('.add-timeslot');
+
+        addButton.addEventListener('click', function () {
+            const newRow = document.createElement('div');
+            newRow.className = 'row timeslot-row mt-2';
+
+            newRow.innerHTML = `
+                <div class="col-md-5">
+                    <input type="time" class="form-control" name="available_start_time[]" required>
+                </div>
+                <div class="col-md-5">
+                    <input type="time" class="form-control" name="available_end_time[]" required>
+                </div>
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-danger btn-sm remove-timeslot">−</button>
+                </div>
+            `;
+            container.appendChild(newRow);
+        });
+
+        container.addEventListener('click', function (e) {
+            if (e.target && e.target.classList.contains('remove-timeslot')) {
+                e.target.closest('.timeslot-row').remove();
+            }
+        });
+    });
+</script>
 {% endblock %}

@@ -1,27 +1,88 @@
 {% extends "base.html" %}
 {% block title %}Book Appointment{% endblock %}
+
 {% block content %}
-    <h2>Book Appointment</h2>
+<div class="container mt-5">
+    <h2 class="mb-4">Book Appointment</h2>
+
     {% if message %}
         <div class="alert alert-success">{{ message }}</div>
     {% endif %}
-    <form method="post" action="/book-appointment">
+
+    <!-- Doctor Selection -->
+    <form method="post" action="/book-appointment" id="appointment-form">
+        <input type="hidden" name="csrf_token" value="{{ request.scope.get('_csrf_token') }}">
+
         <div class="mb-3">
             <label class="form-label">Doctor</label>
-            <select name="doctor_id" class="form-select" required>
+            <select name="doctor_id" id="doctor-select" class="form-select" required>
+                <option value="">-- Select a Doctor --</option>
                 {% for doctor in doctors %}
                     <option value="{{ doctor.id }}">{{ doctor.full_name }}</option>
                 {% endfor %}
             </select>
         </div>
+
+        <!-- Available Times Display -->
+        <div id="available-times" class="mb-3 d-none">
+            <label class="form-label">Available Times</label>
+            <ul id="times-list" class="list-group"></ul>
+        </div>
+
+        <!-- Appointment Time -->
         <div class="mb-3">
             <label class="form-label">Date & Time</label>
-            <input type="datetime-local" name="appointment_time" class="form-control" required>
+            <input type="datetime-local" name="appointment_time" id="appointment-time" class="form-control" required>
         </div>
+
+        <!-- Notes/Symptoms -->
         <div class="mb-3">
-            <label class="form-label">Notes/Symptoms</label>
+            <label class="form-label">Notes/Symptoms (optional)</label>
             <textarea name="notes" class="form-control" rows="3"></textarea>
         </div>
-        <button type="submit" class="btn btn-primary">Book</button>
+
+        <button type="submit" class="btn btn-primary">Book Appointment</button>
     </form>
+</div>
+
+<!-- JavaScript to load available times -->
+<script>
+document.getElementById('doctor-select').addEventListener('change', function () {
+    const doctorId = this.value;
+    const availableTimesDiv = document.getElementById('available-times');
+    const timesList = document.getElementById('times-list');
+    timesList.innerHTML = '';
+
+    if (!doctorId) {
+        availableTimesDiv.classList.add('d-none');
+        return;
+    }
+
+    // Fetch available times from backend
+    fetch(`/get-available-times?doctor_id=${doctorId}`)
+        .then(response => response.json())
+        .then(times => {
+            if (times.length === 0) {
+                timesList.innerHTML = '<li class="list-group-item text-muted">No available times.</li>';
+            } else {
+                times.forEach(time => {
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item';
+                    li.textContent = new Date(time).toLocaleString(); // Format date
+                    li.style.cursor = 'pointer';
+                    li.onclick = () => {
+                        document.getElementById('appointment-time').value = time;
+                    };
+                    timesList.appendChild(li);
+                });
+            }
+            availableTimesDiv.classList.remove('d-none');
+        })
+        .catch(err => {
+            console.error(err);
+            timesList.innerHTML = '<li class="list-group-item text-danger">Error fetching times.</li>';
+            availableTimesDiv.classList.remove('d-none');
+        });
+});
+</script>
 {% endblock %}

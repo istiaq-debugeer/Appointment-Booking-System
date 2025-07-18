@@ -1,0 +1,27 @@
+<!-- templates/edit_appointment.html -->
+{% extends "base.html" %}
+{% block title %}Edit Appointment{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Edit Appointment</h2>
+    <form method="post" action="/appointments/{{appointment.id}}">
+        <div class="mb-3">
+            <label for="appointment_time" class="form-label">Appointment Time</label>
+            <input type="datetime-local" class="form-control" name="appointment_time"
+                   value="{{ appointment.appointment_time.strftime('%Y-%m-%dT%H:%M') }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="status" class="form-label">Status</label>
+            <select name="status" class="form-control">
+                <option value="PENDING" {% if appointment.status == "PENDING" %}selected{% endif %}>PENDING</option>
+                <option value="CONFIRMED" {% if appointment.status == "CONFIRMED" %}selected{% endif %}>CONFIRMED</option>
+                <option value="CANCELLED" {% if appointment.status == "CANCELLED" %}selected{% endif %}>CANCELLED</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Update Appointment</button>
+    </form>
+</div>
+{% endblock %}

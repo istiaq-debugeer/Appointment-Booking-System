@@ -1,10 +1,137 @@
 {% extends "base.html" %}
-{% block title %}Monthly Report{% endblock %}
+{% block title %}Profile{% endblock %}
+
 {% block content %}
-    <h2>Monthly Report</h2>
-    <ul class="list-group">
-        <li class="list-group-item">Total Patient Visits: {{ report.total_visits }}</li>
-        <li class="list-group-item">Total Appointments: {{ report.total_appointments }}</li>
-        <li class="list-group-item">Total Earnings: {{ report.total_earnings }}</li>
-    </ul>
+<div class="container mt-5">
+    <h2 class="mb-4">My Profile</h2>
+
+    <form method="post" action="/auth/profile/update">
+        <ul class="list-group">
+
+            <!-- Full Name -->
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div class="field-display" id="display-full_name">
+                    <strong>Full Name:</strong> {{ user.full_name }}
+                </div>
+                <div class="field-edit d-none" id="edit-full_name">
+                    <input type="text" class="form-control" name="full_name" value="{{ user.full_name }}">
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-primary" onclick="toggleEdit('full_name')">✏️ Edit</button>
+            </li>
+
+            <!-- Email -->
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div class="field-display" id="display-email">
+                    <strong>Email:</strong> {{ user.email }}
+                </div>
+                <div class="field-edit d-none" id="edit-email">
+                    <input type="email" class="form-control" name="email" value="{{ user.email }}">
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-primary" onclick="toggleEdit('email')">✏️ Edit</button>
+            </li>
+
+            <!-- Mobile -->
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div class="field-display" id="display-mobile">
+                    <strong>Mobile:</strong> {{ user.mobile }}
+                </div>
+                <div class="field-edit d-none" id="edit-mobile">
+                    <input type="text" class="form-control" name="mobile" value="{{ user.mobile }}">
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-primary" onclick="toggleEdit('mobile')">✏️ Edit</button>
+            </li>
+
+            <!-- User Type -->
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div class="field-display" id="display-user_type">
+                    <strong>User Type:</strong> {{ user.user_type }}
+                </div>
+                <div class="field-edit d-none" id="edit-user_type">
+                    <input type="text" class="form-control" name="user_type" value="{{ user.user_type }}">
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-primary" onclick="toggleEdit('user_type')">✏️ Edit</button>
+            </li>
+
+            <!-- Division -->
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div class="field-display" id="display-division">
+                    <strong>Division:</strong> {{ user.division }}
+                </div>
+                <div class="field-edit d-none" id="edit-division">
+                    <input type="text" class="form-control" name="division" value="{{ user.division }}">
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-primary" onclick="toggleEdit('division')">✏️ Edit</button>
+            </li>
+
+            <!-- District -->
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div class="field-display" id="display-district">
+                    <strong>District:</strong> {{ user.district }}
+                </div>
+                <div class="field-edit d-none" id="edit-district">
+                    <input type="text" class="form-control" name="district" value="{{ user.district }}">
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-primary" onclick="toggleEdit('district')">✏️ Edit</button>
+            </li>
+
+            <!-- Thana -->
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div class="field-display" id="display-thana">
+                    <strong>Thana:</strong> {{ user.thana }}
+                </div>
+                <div class="field-edit d-none" id="edit-thana">
+                    <input type="text" class="form-control" name="thana" value="{{ user.thana }}">
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-primary" onclick="toggleEdit('thana')">✏️ Edit</button>
+            </li>
+
+            {% if user.license_number %}
+                <!-- License Number -->
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div class="field-display" id="display-license_number">
+                        <strong>License Number:</strong> {{ user.license_number }}
+                    </div>
+                    <div class="field-edit d-none" id="edit-license_number">
+                        <input type="text" class="form-control" name="license_number" value="{{ user.license_number }}">
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="toggleEdit('license_number')">✏️ Edit</button>
+                </li>
+
+                <!-- Experience Years -->
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div class="field-display" id="display-experience_years">
+                        <strong>Experience (Years):</strong> {{ user.experience_years }}
+                    </div>
+                    <div class="field-edit d-none" id="edit-experience_years">
+                        <input type="text" class="form-control" name="experience_years" value="{{ user.experience_years }}">
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="toggleEdit('experience_years')">✏️ Edit</button>
+                </li>
+
+                <!-- Consultation Fee -->
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div class="field-display" id="display-consultation_fee">
+                        <strong>Consultation Fee (Tk):</strong> {{ user.consultation_fee }}
+                    </div>
+                    <div class="field-edit d-none" id="edit-consultation_fee">
+                        <input type="text" class="form-control" name="consultation_fee" value="{{ user.consultation_fee }}">
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="toggleEdit('consultation_fee')">✏️ Edit</button>
+                </li>
+            {% endif %}
+
+        </ul>
+
+        <div class="mt-4 text-end">
+            <button type="submit" class="btn btn-success">💾 Save All Changes</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    function toggleEdit(fieldName) {
+        document.getElementById(`display-${fieldName}`).classList.toggle("d-none");
+        document.getElementById(`edit-${fieldName}`).classList.toggle("d-none");
+    }
+</script>
 {% endblock %}

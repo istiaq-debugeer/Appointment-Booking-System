@@ -1,24 +1,67 @@
 {% extends "base.html" %}
 {% block title %}Dashboard{% endblock %}
+
 {% block content %}
-    <h2>Welcome, {{ user.full_name }}!</h2>
-    {% if user.user_type == "Patient" %}
-        <a href="/book-appointment" class="btn btn-primary mb-2">Book Appointment</a>
-        <h3>Booking History</h3>
-        <ul class="list-group">
-            {% for booking in bookings %}
-                <li class="list-group-item">{{ booking.date }} - {{ booking.status }}</li>
-            {% endfor %}
-        </ul>
-    {% elif user.user_type == "Doctor" %}
-        <a href="/doctor-schedule" class="btn btn-primary mb-2">Manage Schedule</a>
-        <h3>Appointments</h3>
-        <ul class="list-group">
-            {% for appointment in appointments %}
-                <li class="list-group-item">{{ appointment.date }} - {{ appointment.status }}</li>
-            {% endfor %}
-        </ul>
-    {% elif user.user_type == "Admin" %}
-        <a href="/admin-dashboard" class="btn btn-primary mb-2">Admin Dashboard</a>
+<div class="container mt-5">
+    <h2>Welcome back, {{ user.full_name }}!</h2>
+    <p><strong>Email:</strong> {{ user.email }}</p>
+    <p><strong>Role:</strong> {{ user.user_type }}</p>
+
+    <!-- Patient Section -->
+    {% if user.user_type == "PATIENT" %}
+        <a href="/book-appointment" class="btn btn-primary mb-3">📅 Book New Appointment</a>
+
+        <h4 class="mt-4">Your Appointments</h4>
+        {% if bookings %}
+            <ul class="list-group mb-4">
+                {% for booking in bookings %}
+                
+                    <a href="/appointments/{{ booking.id }}/edit" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ booking.appointment_time.strftime('%Y-%m-%d %H:%M') }}</strong><br>
+                            With Dr. {{ booking.doctor.full_name }}
+                        </div>
+                        <span class="badge bg-{{ 'success' if booking.status == 'CONFIRMED' else 'warning' if booking.status == 'PENDING' else 'danger' }}">
+                            {{ booking.status | title }}
+                        </span>
+                    </a>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>You have no upcoming appointments.</p>
+        {% endif %}
+
+        <!-- Doctor Section -->
+    {% elif user.user_type == "DOCTOR" %}
+        <h4 class="mt-4">Your Appointments</h4>
+       <a href="/auth/doctor/profile" class="btn btn-primary mb-3">📅 Schedule Appointment</a>
+        <p><strong>Total Appointments:</strong> {{ appointments|length }}</p>
+
+        {% if appointments %}
+            <ul class="list-group mb-4">
+                {% for appointment in appointments %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ appointment.appointment_time.strftime('%Y-%m-%d %H:%M') }}</strong><br>
+                            Patient: {{ appointment.patient.full_name }}
+                        </div>
+                        <span class="badge bg-{{ 'success' if appointment.status == 'CONFIRMED' else 'warning' if appointment.status == 'PENDING' else 'danger' }}">
+                            {{ appointment.status | title }}
+                        </span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No scheduled appointments.</p>
     {% endif %}
+
+    <!-- Admin Section -->
+    {% elif user.user_type == "ADMIN" %}
+        <h4 class="mt-4">Welcome, Admin</h4>
+        <p>You can manage users, doctors, and appointments from the admin dashboard.</p>
+        <a href="/admin/users" class="btn btn-primary me-2">👥 Manage Users</a>
+        <a href="/admin/appointments" class="btn btn-info">📋 View Appointments</a>
+
+    {% endif %}
+</div>
 {% endblock %}
