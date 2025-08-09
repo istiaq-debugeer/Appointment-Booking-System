@@ -1,5 +1,6 @@
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from pathlib import Path
 
 
 class Settings(BaseSettings):
@@ -19,6 +20,8 @@ class Settings(BaseSettings):
     FROM_EMAIL: str
     # DB_ECHO: bool = False
 
+    REDIS_URL = str
+
     @property
     def Database_url(self) -> str:
         return (
@@ -27,7 +30,8 @@ class Settings(BaseSettings):
         )
 
     class Config:
-        env_file = ".env"
+        env_file = Path(__file__).resolve().parent.parent.parent / ".env"
+        env_file_encoding = "utf-8"
 
 
 # class EmailSettings(BaseSettings):
